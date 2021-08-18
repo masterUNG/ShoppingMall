@@ -7,6 +7,7 @@ import 'package:shoppingmall/widgets/show_image.dart';
 import 'package:shoppingmall/widgets/show_title.dart';
 
 class MyDialog {
+  
   Future<Null> showProgressDialog(BuildContext context) async {
     showDialog(
       context: context,
