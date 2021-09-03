@@ -4,6 +4,7 @@ import 'package:shoppingmall/states/add_product.dart';
 import 'package:shoppingmall/states/authen.dart';
 import 'package:shoppingmall/states/buyer_service.dart';
 import 'package:shoppingmall/states/create_account.dart';
+import 'package:shoppingmall/states/edit_profile_saler.dart';
 import 'package:shoppingmall/states/rider_service.dart';
 import 'package:shoppingmall/states/saler_service.dart';
 import 'package:shoppingmall/utility/my_constant.dart';
@@ -15,6 +16,7 @@ final Map<String, WidgetBuilder> map = {
   '/salerService': (BuildContext context) => SalerService(),
   '/riderService': (BuildContext context) => RiderService(),
   '/addProduct':(BuildContext context)=> AddProduct(),
+  '/editProfileSaler':(BuildContext context)=> EditProfileSaler(),
 };
 
 String? initlalRoute;
