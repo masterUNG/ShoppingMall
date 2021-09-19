@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
@@ -10,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shoppingmall/models/user_model.dart';
 import 'package:shoppingmall/utility/my_constant.dart';
+import 'package:shoppingmall/utility/my_dialog.dart';
 import 'package:shoppingmall/widgets/show_image.dart';
 import 'package:shoppingmall/widgets/show_progress.dart';
 import 'package:shoppingmall/widgets/show_title.dart';
@@ -118,7 +120,44 @@ class _EditProfileSalerState extends State<EditProfileSaler> {
 
   Future<Null> processEditProfileSeller() async {
     print('processEditProfileSeller Work');
-    if (formKey.currentState!.validate()) {}
+
+    MyDialog().showProgressDialog(context);
+
+    if (formKey.currentState!.validate()) {
+      if (file == null) {
+        print('## User Current Avatar');
+        editValueToMySQL(userModel!.avatar);
+      } else {
+        String apiSaveAvatar =
+            '${MyConstant.domain}/shoppingmall/saveAvatar.php';
+
+        List<String> nameAvatars = userModel!.avatar.split('/');
+        String nameFile = nameAvatars[nameAvatars.length - 1];
+        nameFile = 'edit${Random().nextInt(100)}$nameFile';
+
+        print('## User New Avatar nameFile ==>>> $nameFile');
+
+        Map<String, dynamic> map = {};
+        map['file'] =
+            await MultipartFile.fromFile(file!.path, filename: nameFile);
+        FormData formData = FormData.fromMap(map);
+        await Dio().post(apiSaveAvatar, data: formData).then((value) {
+          print('Upload Succes');
+          String pathAvatar = '/shoppingmall/avatar/$nameFile';
+          editValueToMySQL(pathAvatar);
+        });
+      }
+    }
+  }
+
+  Future<Null> editValueToMySQL(String pathAvatar) async {
+    print('## pathAvatar ==> $pathAvatar');
+    String apiEditProfile =
+        '${MyConstant.domain}/shoppingmall/editProfileSellerWhereId.php?isAdd=true&id=${userModel!.id}&name=${nameController.text}&address=${addressController.text}&phone=${phoneController.text}&avatar=$pathAvatar&lat=${latLng!.latitude}&lng=${latLng!.longitude}';
+    await Dio().get(apiEditProfile).then((value) {
+      Navigator.pop(context);
+      Navigator.pop(context);
+    });
   }
 
   ElevatedButton buildButtonEditProfile() => ElevatedButton.icon(
@@ -199,7 +238,9 @@ class _EditProfileSalerState extends State<EditProfileSaler> {
                         padding: const EdgeInsets.all(8.0),
                         child: userModel!.avatar == null
                             ? ShowImage(path: MyConstant.avatar)
-                            : file == null ? buildShowImageNetwork() : Image.file(file!) ,
+                            : file == null
+                                ? buildShowImageNetwork()
+                                : Image.file(file!),
                       ),
               ),
               IconButton(
@@ -218,10 +259,9 @@ class _EditProfileSalerState extends State<EditProfileSaler> {
 
   CachedNetworkImage buildShowImageNetwork() {
     return CachedNetworkImage(
-                              imageUrl:
-                                  '${MyConstant.domain}${userModel!.avatar}',
-                              placeholder: (context, url) => ShowProgress(),
-                            );
+      imageUrl: '${MyConstant.domain}${userModel!.avatar}',
+      placeholder: (context, url) => ShowProgress(),
+    );
   }
 
   Row buildName(BoxConstraints constraints) {
