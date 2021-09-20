@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shoppingmall/models/user_model.dart';
+import 'package:shoppingmall/states/show_product_buyer.dart';
 import 'package:shoppingmall/utility/my_constant.dart';
 import 'package:shoppingmall/widgets/show_image.dart';
 import 'package:shoppingmall/widgets/show_progress.dart';
@@ -53,29 +54,40 @@ class _ShowAllShopBuyerState extends State<ShowAllShopBuyer> {
           ? ShowProgress()
           : GridView.builder(
               itemCount: userModels.length,
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(childAspectRatio: 2/3,
-                  maxCrossAxisExtent: 160),
-              itemBuilder: (context, index) => Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Container(
-                        width: 80,
-                        height: 80,
-                        child: CachedNetworkImage(
-                            errorWidget: (context, url, error) =>
-                                ShowImage(path: MyConstant.avatar),
-                            placeholder: (context, url) => ShowProgress(),
-                            fit: BoxFit.cover,
-                            imageUrl:
-                                '${MyConstant.domain}${userModels[index].avatar}'),
-                      ),
-                      ShowTitle(
-                          title: cutWord(userModels[index].name),
-                          textStyle: MyConstant().h3Style()),
-                    ],
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  childAspectRatio: 2 / 3, maxCrossAxisExtent: 160),
+              itemBuilder: (context, index) => GestureDetector(
+                onTap: () {
+                  print('You Click from ${userModels[index].name}');
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ShowProductBuyer(userModel: userModels[index]),
+                      ));
+                },
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          child: CachedNetworkImage(
+                              errorWidget: (context, url, error) =>
+                                  ShowImage(path: MyConstant.avatar),
+                              placeholder: (context, url) => ShowProgress(),
+                              fit: BoxFit.cover,
+                              imageUrl:
+                                  '${MyConstant.domain}${userModels[index].avatar}'),
+                        ),
+                        ShowTitle(
+                            title: cutWord(userModels[index].name),
+                            textStyle: MyConstant().h3Style()),
+                      ],
+                    ),
                   ),
                 ),
               ),
