@@ -24,6 +24,8 @@ class _ShowProductBuyerState extends State<ShowProductBuyer> {
   bool? haveProduct;
   List<ProductModel> productModels = [];
   List<List<String>> listImages = [];
+  int indexImage = 0;
+  int amountInt = 1;
 
   @override
   void initState() {
@@ -95,7 +97,7 @@ class _ShowProductBuyerState extends State<ShowProductBuyer> {
         itemCount: productModels.length,
         itemBuilder: (context, index) => GestureDetector(
           onTap: () {
-            print('### You Click Index ==>> $index');
+            // print('### You Click Index ==>> $index');
             showAlertDialog(
               productModels[index],
               listImages[index],
@@ -135,7 +137,8 @@ class _ShowProductBuyerState extends State<ShowProductBuyer> {
                           textStyle: MyConstant().h3Style(),
                         ),
                         ShowTitle(
-                          title: 'Detail = ${productModels[index].detail}',
+                          title: cutWord(
+                              'Detail = ${productModels[index].detail}'),
                           textStyle: MyConstant().h3Style(),
                         ),
                       ],
@@ -159,28 +162,159 @@ class _ShowProductBuyerState extends State<ShowProductBuyer> {
       index++;
     }
     String result = '${MyConstant.domain}/shoppingmall${strings[0]}';
-    print('### result = $result');
+    // print('### result = $result');
     return result;
   }
 
   Future<Null> showAlertDialog(
       ProductModel productModel, List<String> images) async {
     showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: ListTile(
-          leading: ShowImage(path: MyConstant.image2),
-          title: ShowTitle(
-            title: productModel.name,
-            textStyle: MyConstant().h2Style(),
-          ),
-          subtitle: ShowTitle(
-            title: 'Price = ${productModel.price} THB',
-            textStyle: MyConstant().h3Style(),
-          ),
-        ),
-        content: CachedNetworkImage(imageUrl: '${MyConstant.domain}/shoppingmall${images[0]}'),
-      ),
-    );
+        context: context,
+        builder: (context) => StatefulBuilder(
+              builder: (context, setState) => AlertDialog(
+                title: ListTile(
+                  leading: ShowImage(path: MyConstant.image2),
+                  title: ShowTitle(
+                    title: productModel.name,
+                    textStyle: MyConstant().h2Style(),
+                  ),
+                  subtitle: ShowTitle(
+                    title: 'Price = ${productModel.price} THB',
+                    textStyle: MyConstant().h3Style(),
+                  ),
+                ),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl:
+                            '${MyConstant.domain}/shoppingmall${images[indexImage]}',
+                        placeholder: (context, url) => ShowProgress(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  indexImage = 0;
+                                  print('### indexImage = $indexImage');
+                                });
+                              },
+                              icon: Icon(Icons.filter_1),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  indexImage = 1;
+                                  print('### indexImage = $indexImage');
+                                });
+                              },
+                              icon: Icon(Icons.filter_2),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  indexImage = 2;
+                                  print('### indexImage = $indexImage');
+                                });
+                              },
+                              icon: Icon(Icons.filter_3),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  indexImage = 3;
+                                  print('### indexImage = $indexImage');
+                                });
+                              },
+                              icon: Icon(Icons.filter_4),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          ShowTitle(
+                              title: 'รายละเอียด :',
+                              textStyle: MyConstant().h2Style()),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Container(
+                                width: 200,
+                                child: ShowTitle(
+                                    title: productModel.detail,
+                                    textStyle: MyConstant().h3Style())),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              if (amountInt != 1) {
+                                setState(() {
+                                  amountInt--;
+                                });
+                              }
+                            },
+                            icon: Icon(
+                              Icons.remove_circle_outline,
+                              color: MyConstant.dark,
+                            ),
+                          ),
+                          ShowTitle(
+                            title: amountInt.toString(),
+                            textStyle: MyConstant().h1Style(),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                amountInt++;
+                              });
+                            },
+                            icon: Icon(
+                              Icons.add_circle_outline,
+                              color: MyConstant.dark,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('Add Cart',style: MyConstant().h2BlueStyle(),),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('Cancel',style: MyConstant().h2RedStyle(),),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ));
+  }
+
+  String cutWord(String string) {
+    String result = string;
+    if (result.length >= 100) {
+      result = result.substring(0, 100);
+      result = '$result ...';
+    }
+    return result;
   }
 }
