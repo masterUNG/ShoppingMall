@@ -4,8 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shoppingmall/models/product_model.dart';
+import 'package:shoppingmall/models/sqlite_model.dart';
 import 'package:shoppingmall/models/user_model.dart';
 import 'package:shoppingmall/utility/my_constant.dart';
+import 'package:shoppingmall/utility/sqlite_helper.dart';
 import 'package:shoppingmall/widgets/show_image.dart';
 import 'package:shoppingmall/widgets/show_progress.dart';
 import 'package:shoppingmall/widgets/show_title.dart';
@@ -292,15 +294,46 @@ class _ShowProductBuyerState extends State<ShowProductBuyer> {
                   ),
                 ),
                 actions: [
-                  Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text('Add Cart',style: MyConstant().h2BlueStyle(),),
+                        onPressed: () async {
+                         
+                          String idSeller = userModel!.id;
+                          String idProduct = productModel.id;
+                          String name = productModel.name;
+                          String price = productModel.price;
+                          String amount = amountInt.toString();
+                          int sumInt = int.parse(price) * amountInt;
+                          String sum = sumInt.toString();
+                          print(
+                              '### idSeller ==>> $idSeller, idProduct = $idProduct, name = $name, price = $price, amount = $amount, sum = $sum');
+                          SQLiteModel sqLiteModel = SQLiteModel(
+                              idSeller: idSeller,
+                              idProduct: idProduct,
+                              name: name,
+                              price: price,
+                              amount: amount,
+                              sum: sum);
+                          await SQLiteHelper()
+                              .insertValueToSQLite(sqLiteModel)
+                              .then((value) {
+                                Navigator.pop(context);
+                                 Navigator.pop(context);
+                              });
+                        },
+                        child: Text(
+                          'Add Cart',
+                          style: MyConstant().h2BlueStyle(),
+                        ),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text('Cancel',style: MyConstant().h2RedStyle(),),
+                        child: Text(
+                          'Cancel',
+                          style: MyConstant().h2RedStyle(),
+                        ),
                       ),
                     ],
                   ),

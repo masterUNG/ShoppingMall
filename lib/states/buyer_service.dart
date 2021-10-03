@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:shoppingmall/bodys/my_money_buyer.dart';
 import 'package:shoppingmall/bodys/my_order_buyer.dart';
@@ -27,6 +29,12 @@ class _BuyerServiceState extends State<BuyerService> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Buyer'),
+        actions: [
+          IconButton(
+            onPressed: ()=>Navigator.pushNamed(context, MyConstant.routeShowCart),
+            icon: Icon(Icons.shopping_cart_outlined),
+          ),
+        ],
       ),
       drawer: Drawer(
         child: Stack(
