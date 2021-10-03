@@ -7,6 +7,7 @@ import 'package:shoppingmall/models/product_model.dart';
 import 'package:shoppingmall/models/sqlite_model.dart';
 import 'package:shoppingmall/models/user_model.dart';
 import 'package:shoppingmall/utility/my_constant.dart';
+import 'package:shoppingmall/utility/my_dialog.dart';
 import 'package:shoppingmall/utility/sqlite_helper.dart';
 import 'package:shoppingmall/widgets/show_image.dart';
 import 'package:shoppingmall/widgets/show_progress.dart';
@@ -28,6 +29,7 @@ class _ShowProductBuyerState extends State<ShowProductBuyer> {
   List<List<String>> listImages = [];
   int indexImage = 0;
   int amountInt = 1;
+  String? currentIdSeller;
 
   @override
   void initState() {
@@ -35,6 +37,20 @@ class _ShowProductBuyerState extends State<ShowProductBuyer> {
     super.initState();
     userModel = widget.userModel;
     readAPI();
+    readCart();
+  }
+
+  Future<Null> readCart() async {
+    await SQLiteHelper().readSQLite().then((value) {
+      if (value.length != 0) {
+        List<SQLiteModel> models = [];
+        for (var model in value) {
+          models.add(model);
+        }
+        currentIdSeller = models[0].idSeller;
+        print('### currentIdSeller = $currentIdSeller');
+      }
+    });
   }
 
   Future<void> readAPI() async {
@@ -299,7 +315,6 @@ class _ShowProductBuyerState extends State<ShowProductBuyer> {
                     children: [
                       TextButton(
                         onPressed: () async {
-                         
                           String idSeller = userModel!.id;
                           String idProduct = productModel.id;
                           String name = productModel.name;
@@ -307,21 +322,26 @@ class _ShowProductBuyerState extends State<ShowProductBuyer> {
                           String amount = amountInt.toString();
                           int sumInt = int.parse(price) * amountInt;
                           String sum = sumInt.toString();
-                          print(
-                              '### idSeller ==>> $idSeller, idProduct = $idProduct, name = $name, price = $price, amount = $amount, sum = $sum');
-                          SQLiteModel sqLiteModel = SQLiteModel(
-                              idSeller: idSeller,
-                              idProduct: idProduct,
-                              name: name,
-                              price: price,
-                              amount: amount,
-                              sum: sum);
-                          await SQLiteHelper()
-                              .insertValueToSQLite(sqLiteModel)
-                              .then((value) {
-                                Navigator.pop(context);
-                                 Navigator.pop(context);
-                              });
+                          if (currentIdSeller == idSeller) {
+                            print(
+                                '### idSeller ==>> $idSeller, idProduct = $idProduct, name = $name, price = $price, amount = $amount, sum = $sum');
+                            SQLiteModel sqLiteModel = SQLiteModel(
+                                idSeller: idSeller,
+                                idProduct: idProduct,
+                                name: name,
+                                price: price,
+                                amount: amount,
+                                sum: sum);
+                            await SQLiteHelper()
+                                .insertValueToSQLite(sqLiteModel)
+                                .then((value) {
+                              amountInt = 1;
+                              Navigator.pop(context);
+                            });
+                          } else {
+                            MyDialog().normalDialog(context, 'ร้านผิด ?',
+                                'กรุณาเลือกสินค้าที่ ร้านเดิม ให้เสร็จก่อน เลือกร้านอื่น คะ');
+                          }
                         },
                         child: Text(
                           'Add Cart',
