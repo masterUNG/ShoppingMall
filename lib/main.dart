@@ -27,7 +27,7 @@ Future<Null> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences preferences = await SharedPreferences.getInstance();
   String? type = preferences.getString('type');
-  print('### type ===>> $type');
+  // print('### type ===>> $type');
   if (type?.isEmpty ?? true) {
     initlalRoute = MyConstant.routeAuthen;
     runApp(MyApp());

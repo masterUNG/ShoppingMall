@@ -35,7 +35,7 @@ class SQLiteHelper {
     Database database = await connectedDatabase();
     List<SQLiteModel> results = [];
     List<Map<String, dynamic>> maps = await database.query(tableDatabase);
-    print('### maps on SQLitHelper ==>> $maps');
+    // print('### maps on SQLitHelper ==>> $maps');
     for (var item in maps) {
       SQLiteModel model = SQLiteModel.fromMap(item);
       results.add(model);
