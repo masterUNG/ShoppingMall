@@ -327,7 +327,8 @@ class _ShowProductBuyerState extends State<ShowProductBuyer> {
                           print(
                               '### curentIdSeller = $currentIdSeller, idSeller ==>> $idSeller, idProduct = $idProduct, name = $name, price = $price, amount = $amount, sum = $sum');
 
-                          if (currentIdSeller == idSeller) {
+                          if ((currentIdSeller == idSeller) ||
+                              (currentIdSeller == null)) {
                             SQLiteModel sqLiteModel = SQLiteModel(
                                 idSeller: idSeller,
                                 idProduct: idProduct,
@@ -342,6 +343,8 @@ class _ShowProductBuyerState extends State<ShowProductBuyer> {
                               Navigator.pop(context);
                             });
                           } else {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
                             MyDialog().normalDialog(context, 'ร้านผิด ?',
                                 'กรุณาเลือกสินค้าที่ ร้านเดิม ให้เสร็จก่อน เลือกร้านอื่น คะ');
                           }

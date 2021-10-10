@@ -41,7 +41,7 @@ class _ShowCartState extends State<ShowCart> {
           ? ShowProgress()
           : ListView.builder(
               itemCount: sqliteModels.length,
-              itemBuilder: (context, index) => Text(sqliteModels[index].idSeller),
+              itemBuilder: (context, index) => Text(sqliteModels[index].name),
             ),
     );
   }
