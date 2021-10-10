@@ -42,7 +42,8 @@ class _ShowProductBuyerState extends State<ShowProductBuyer> {
 
   Future<Null> readCart() async {
     await SQLiteHelper().readSQLite().then((value) {
-      if (value.length != 0) {
+      print('### value readCart ==> $value');
+      if (value.isNotEmpty) {
         List<SQLiteModel> models = [];
         for (var model in value) {
           models.add(model);
@@ -322,9 +323,11 @@ class _ShowProductBuyerState extends State<ShowProductBuyer> {
                           String amount = amountInt.toString();
                           int sumInt = int.parse(price) * amountInt;
                           String sum = sumInt.toString();
+
+                          print(
+                              '### curentIdSeller = $currentIdSeller, idSeller ==>> $idSeller, idProduct = $idProduct, name = $name, price = $price, amount = $amount, sum = $sum');
+
                           if (currentIdSeller == idSeller) {
-                            print(
-                                '### idSeller ==>> $idSeller, idProduct = $idProduct, name = $name, price = $price, amount = $amount, sum = $sum');
                             SQLiteModel sqLiteModel = SQLiteModel(
                                 idSeller: idSeller,
                                 idProduct: idProduct,
