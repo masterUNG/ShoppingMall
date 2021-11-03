@@ -24,9 +24,13 @@ class _BankState extends State<Bank> {
     );
   }
 
-  Card buildBKKbank() {
-    return Card(
-      child: ListTile(
+  Widget buildBKKbank() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      height: 150,
+      child: Center(
+        child: Card(color: Colors.indigo.shade100,
+          child: ListTile(
             leading: Container(
               width: 80,
               height: 80,
@@ -49,12 +53,18 @@ class _BankState extends State<Bank> {
               textStyle: MyConstant().h3Style(),
             ),
           ),
+        ),
+      ),
     );
   }
 
-  Card buildKbank() {
-    return Card(
-      child: ListTile(
+  Container buildKbank() {
+    return Container(
+       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      height: 150,
+      child: Center(
+        child: Card(color: Colors.green[100],
+          child: ListTile(
             leading: Container(
               width: 80,
               height: 80,
@@ -72,11 +82,12 @@ class _BankState extends State<Bank> {
               textStyle: MyConstant().h2Style(),
             ),
             subtitle: ShowTitle(
-              title:
-                  'ชื่อบัญชี นายชัยวุฒิ พรหมบุตร เลขบัญชี  056 - 2 - 32767 - 5',
+              title: 'ชื่อบัญชี นายชัยวุฒิ พรหมบุตร เลขบัญชี  056 - 2 - 32767 - 5',
               textStyle: MyConstant().h3Style(),
             ),
           ),
+        ),
+      ),
     );
   }
 
