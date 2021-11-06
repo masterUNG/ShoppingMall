@@ -4,7 +4,8 @@ class MyConstant {
   // Genernal
   static String appName = 'Shopping Mall';
   static String domain =
-      'https://e299-2405-9800-bc01-ac24-64a3-f397-6e76-4914.ngrok.io';
+      'https://e75e-2405-9800-bc01-ac24-64a3-f397-6e76-4914.ngrok.io';
+  static String urlPrompay = 'https://promptpay.io/0818595309.png';
 
   // Route
   static String routeAuthen = '/authen';
@@ -65,7 +66,7 @@ class MyConstant {
         fontWeight: FontWeight.w700,
       );
 
-      TextStyle h2BlueStyle() => TextStyle(
+  TextStyle h2BlueStyle() => TextStyle(
         fontSize: 18,
         color: Colors.blue.shade800,
         fontWeight: FontWeight.w700,

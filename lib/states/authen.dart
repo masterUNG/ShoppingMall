@@ -242,15 +242,17 @@ class _AuthenState extends State<Authen> {
     );
   }
 
-  Row buildImage(double size) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: size * 0.6,
-          child: ShowImage(path: MyConstant.image4),
-        ),
-      ],
+  Container buildImage(double size) {
+    return Container(margin: EdgeInsets.only(top: 100),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: size * 0.6,
+            child: ShowImage(path: MyConstant.image4),
+          ),
+        ],
+      ),
     );
   }
 }
