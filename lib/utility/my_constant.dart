@@ -4,7 +4,7 @@ class MyConstant {
   // Genernal
   static String appName = 'Shopping Mall';
   static String domain =
-      'https://12dc-2405-9800-bc01-ac24-d885-37cb-99bd-d5d6.ngrok.io';
+      'https://b7cb-184-82-196-229.ngrok.io';
   static String urlPrompay = 'https://promptpay.io/0818595309.png';
 
   // Route
