@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:omise_flutter/omise_flutter.dart';
 import 'package:shoppingmall/utility/my_constant.dart';
+import 'package:shoppingmall/utility/my_dialog.dart';
 import 'package:shoppingmall/widgets/show_title.dart';
 
 class Credic extends StatefulWidget {
@@ -25,25 +27,41 @@ class _CredicState extends State<Credic> {
       MaskTextInputFormatter(mask: '## / ####');
   MaskTextInputFormatter cvcMask = MaskTextInputFormatter(mask: '###');
 
+  var formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: GestureDetector(
         onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
         behavior: HitTestBehavior.opaque,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            buildTitle('Name Surname'),
-            buildNamSurname(),
-            buildTitle('ID Card'),
-            formIDcard(),
-            buildExpiryCvc(),
-            buildTitle('Amount :'),
-            formAmount(),
-            Spacer(),
-            buttonAddMoney(),
-          ],
+        child: Form(
+          key: formKey,
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildTitle('Name Surname'),
+                    buildNamSurname(),
+                    buildTitle('ID Card'),
+                    formIDcard(),
+                    buildExpiryCvc(),
+                    buildTitle('Amount :'),
+                    formAmount(),
+                    // Spacer(),
+                  ],
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  buttonAddMoney(),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -54,19 +72,45 @@ class _CredicState extends State<Credic> {
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () {
-          expiryDateMouth = expriyDateStr!.substring(0, 2);
-          expiryDateYear = expriyDateStr!.substring(2, 6);
-          print(
-              'idCard ==>> $idCard, expiryDataStr = $expriyDateStr, expiryDateMouth ==>> $expiryDateMouth, expiryDatyYear ==>> $expiryDateYear, cvc --> $cvc');
+          if (formKey.currentState!.validate()) {
+            getTokenAndChargeOmise();
+          }
         },
         child: Text('Add Money'),
       ),
     );
   }
 
+  Future<void> getTokenAndChargeOmise() async {
+    String publicKey = MyConstant.publicKey;
+
+    print(
+        'name = $name, surname = $surname, publicKey = $publicKey, idCard ==>> $idCard, expiryDataStr = $expriyDateStr, expiryDateMouth ==>> $expiryDateMouth, expiryDatyYear ==>> $expiryDateYear, cvc --> $cvc');
+
+    OmiseFlutter omiseFlutter = OmiseFlutter(publicKey);
+    await omiseFlutter.token
+        .create(
+            '$name $surname', idCard!, expiryDateMouth!, expiryDateYear!, cvc!)
+        .then((value) {
+      String token = value.id.toString();
+      print('token ==>> $token');
+    }).catchError((value) {
+      String title = value.code;
+      String message = value.message;
+      MyDialog().normalDialog(context, title, message);
+    });
+  }
+
   Widget formAmount() => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
         child: TextFormField(
+          validator: (value) {
+            if (value!.isEmpty) {
+              return 'Please Fill Amount in Blank';
+            } else {
+              return null;
+            }
+          },
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
             suffix: ShowTitle(
@@ -111,6 +155,27 @@ class _CredicState extends State<Credic> {
   }
 
   Widget formExpriyDate() => TextFormField(
+        validator: (value) {
+          if (value!.isEmpty) {
+            return 'Please Fill Expiry Date in Blank';
+          } else {
+            if (expriyDateStr!.length != 6) {
+              return 'กรุณา กรอกให้ครบ';
+            } else {
+              expiryDateMouth = expriyDateStr!.substring(0, 2);
+              expiryDateYear = expriyDateStr!.substring(2, 6);
+
+              int expiryDateMouthInt = int.parse(expiryDateMouth!);
+              expiryDateMouth = expiryDateMouthInt.toString();
+
+              if (expiryDateMouthInt > 12) {
+                return 'เดือนไม่ควรเกิน 12';
+              } else {
+                return null;
+              }
+            }
+          }
+        },
         onChanged: (value) {
           expriyDateStr = expiryDateMask.getUnmaskedText();
         },
@@ -125,6 +190,15 @@ class _CredicState extends State<Credic> {
       );
 
   Widget formCVC() => TextFormField(
+        validator: (value) {
+          if (value!.isEmpty) {
+            return 'Please Fill CVC in Blank';
+          } else {
+            if (cvc!.length != 3) {
+              return 'cvc ต้องมี 3 ตัว';
+            } else {}
+          }
+        },
         onChanged: (value) {
           cvc = cvcMask.getUnmaskedText();
         },
@@ -160,6 +234,17 @@ class _CredicState extends State<Credic> {
   Widget formIDcard() => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
         child: TextFormField(
+          validator: (value) {
+            if (value!.isEmpty) {
+              return 'Please Fill ID Card in Blank';
+            } else {
+              if (idCard!.length != 16) {
+                return 'ID Card ต้องมี 16 ตัวอักษร คะ';
+              } else {
+                return null;
+              }
+            }
+          },
           inputFormatters: [idCardMask],
           onChanged: (value) {
             // idCard = value.trim();
@@ -177,6 +262,14 @@ class _CredicState extends State<Credic> {
 
   Widget formName() => Expanded(
           child: TextFormField(
+        validator: (value) {
+          if (value!.isEmpty) {
+            return 'Please Fill Name in Blank';
+          } else {
+            name = value.trim();
+            return null;
+          }
+        },
         decoration: InputDecoration(
           label: ShowTitle(title: 'Name :'),
           border: OutlineInputBorder(
@@ -187,6 +280,14 @@ class _CredicState extends State<Credic> {
 
   Widget formSurName() => Expanded(
           child: TextFormField(
+        validator: (value) {
+          if (value!.isEmpty) {
+            return 'Please Fill Surname in Blank';
+          } else {
+            surname = value.trim();
+            return null;
+          }
+        },
         decoration: InputDecoration(
           label: ShowTitle(title: 'Surname :'),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),

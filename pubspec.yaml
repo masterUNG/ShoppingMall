@@ -38,6 +38,7 @@ dependencies:
   flutter_svg: ^0.23.0+1
   file_utils: ^1.0.1
   mask_text_input_formatter: ^2.0.0
+  omise_flutter: ^0.1.6
 
 dev_dependencies:
   flutter_test:
