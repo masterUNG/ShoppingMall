@@ -4,6 +4,7 @@ import 'package:shoppingmall/states/add_product.dart';
 import 'package:shoppingmall/states/add_waller.dart';
 import 'package:shoppingmall/states/authen.dart';
 import 'package:shoppingmall/states/buyer_service.dart';
+import 'package:shoppingmall/states/confirm_add_wallet.dart';
 import 'package:shoppingmall/states/create_account.dart';
 import 'package:shoppingmall/states/edit_profile_saler.dart';
 import 'package:shoppingmall/states/rider_service.dart';
@@ -21,6 +22,7 @@ final Map<String, WidgetBuilder> map = {
   '/editProfileSaler':(BuildContext context)=> EditProfileSaler(),
   MyConstant.routeShowCart:(BuildContext context)=> ShowCart(),
   MyConstant.routeAddWallet:(BuildContext context)=> AddWallet(),
+  MyConstant.routeConfrimAddWallet:(BuildContext context)=> ConfimeAddWallet(),
 };
 
 String? initlalRoute;
