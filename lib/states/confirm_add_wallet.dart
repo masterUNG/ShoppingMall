@@ -1,10 +1,14 @@
 import 'dart:io';
+import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shoppingmall/utility/my_constant.dart';
+import 'package:shoppingmall/utility/my_dialog.dart';
 import 'package:shoppingmall/widgets/show_image.dart';
 import 'package:shoppingmall/widgets/show_title.dart';
 
@@ -16,14 +20,23 @@ class ConfimeAddWallet extends StatefulWidget {
 }
 
 class _ConfimeAddWalletState extends State<ConfimeAddWallet> {
-   String? dateTimeStr;
-   File? file;
+  String? dateTimeStr;
+  File? file;
+  var formKey = GlobalKey<FormState>();
+
+  String? idBuyer;
+  TextEditingController moneyController = TextEditingController();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     findCurrentTime();
+    findIdBuyer();
+  }
+
+  Future<void> findIdBuyer() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    idBuyer = preferences.getString('id');
   }
 
   void findCurrentTime() {
@@ -48,17 +61,52 @@ class _ConfimeAddWalletState extends State<ConfimeAddWallet> {
               : Icon(Icons.arrow_back),
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          newHeader(),
-          newDateTimePay(),
-          Spacer(),
-          newImage(),
-          Spacer(),
-          newButtonConfirm(),
-        ],
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+        behavior: HitTestBehavior.opaque,
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              newHeader(),
+              newDateTimePay(),
+              Spacer(),
+              newMoney(),
+              Spacer(),
+              newImage(),
+              Spacer(),
+              newButtonConfirm(),
+            ],
+          ),
+        ),
       ),
+    );
+  }
+
+  Row newMoney() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: 250,
+          child: TextFormField(
+            controller: moneyController,
+            keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Please Fill Money ?';
+              } else {
+                return null;
+              }
+            },
+            decoration: InputDecoration(
+              label: ShowTitle(title: 'Money'),
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -66,10 +114,57 @@ class _ConfimeAddWalletState extends State<ConfimeAddWallet> {
     return Container(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          if (formKey.currentState!.validate()) {
+            if (file == null) {
+              MyDialog().normalDialog(context, 'ยังไม่มีรูปภาพ',
+                  'กรุณา ถ่ายภาพ หรือ ใข้ภาพจาก คลังภาพ');
+            } else {
+              processUploadAndInsertData();
+            }
+          }
+        },
         child: Text('Confirm Add Wallet'),
       ),
     );
+  }
+
+  Future<void> processUploadAndInsertData() async {
+    // upload Image to Server
+    String apiSaveSlip = '${MyConstant.domain}/shoppingmall/saveSlip.php';
+    String nameSlip = 'slip${Random().nextInt(1000000)}.jpg';
+
+    MyDialog().showProgressDialog(context);
+
+    try {
+      Map<String, dynamic> map = {};
+      map['file'] =
+          await MultipartFile.fromFile(file!.path, filename: nameSlip);
+      FormData data = FormData.fromMap(map);
+      await Dio().post(apiSaveSlip, data: data).then((value) async {
+        print('value --> $value');
+        Navigator.pop(context);
+
+        // insert value to mySQL
+        var pathSlip = '/slip/$nameSlip';
+        var status = 'WaitOrder';
+        var urlAPIinsert =
+            '${MyConstant.domain}/shoppingmall/insertWallet.php?isAdd=true&idBuyer=$idBuyer&datePay=$dateTimeStr&money=${moneyController.text.trim()}&pathSlip=$pathSlip&status=$status';
+        await Dio().get(urlAPIinsert).then(
+              (value) => MyDialog(funcAction: success).actionDialog(
+                context,
+                'Confirm Success',
+                'Comfirm Add Money to Wallet Success',
+              ),
+            );
+      });
+    } catch (e) {}
+  }
+
+  void success() {
+    Navigator.pushNamedAndRemoveUntil(
+        context, MyConstant.routeBuyerService, (route) => false);
+    print('Success Work');
   }
 
   Future<void> processTakePhoto(ImageSource source) async {
@@ -97,7 +192,9 @@ class _ConfimeAddWalletState extends State<ConfimeAddWallet> {
         Container(
           width: 200,
           height: 200,
-          child: file == null ?  ShowImage(path: 'images/bill.png'):  Image.file(file!),
+          child: file == null
+              ? ShowImage(path: 'images/bill.png')
+              : Image.file(file!),
         ),
         IconButton(
           onPressed: () => processTakePhoto(ImageSource.gallery),
