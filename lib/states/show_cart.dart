@@ -79,37 +79,41 @@ class _ShowCartState extends State<ShowCart> {
       body: load
           ? ShowProgress()
           : sqliteModels.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.symmetric(vertical: 16),
-                        width: 200,
-                        child: ShowImage(path: MyConstant.image1),
-                      ),
-                      ShowTitle(
-                          title: 'Empty Cart',
-                          textStyle: MyConstant().h1Style()),
-                    ],
+              ? Container(decoration: MyConstant().gradintLinearBackground(),
+                child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.symmetric(vertical: 16),
+                          width: 200,
+                          child: ShowImage(path: MyConstant.image1),
+                        ),
+                        ShowTitle(
+                            title: 'Empty Cart',
+                            textStyle: MyConstant().h1Style()),
+                      ],
+                    ),
                   ),
-                )
+              )
               : buildContent(),
     );
   }
 
-  Column buildContent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        showSeller(),
-        buildHead(),
-        listProduct(),
-        buildDivider(),
-        buildTotal(),
-        buildDivider(),
-        buttonController(),
-      ],
+  Container buildContent() {
+    return Container(decoration: MyConstant().gradintLinearBackground(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          showSeller(),
+          buildHead(),
+          listProduct(),
+          buildDivider(),
+          buildTotal(),
+          buildDivider(),
+          buttonController(),
+        ],
+      ),
     );
   }
 

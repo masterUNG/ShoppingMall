@@ -52,46 +52,48 @@ class _ShowAllShopBuyerState extends State<ShowAllShopBuyer> {
     return Scaffold(
       body: load
           ? ShowProgress()
-          : GridView.builder(
-              itemCount: userModels.length,
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  childAspectRatio: 2 / 3, maxCrossAxisExtent: 160),
-              itemBuilder: (context, index) => GestureDetector(
-                onTap: () {
-                  print('You Click from ${userModels[index].name}');
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            ShowProductBuyer(userModel: userModels[index]),
-                      ));
-                },
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          child: CachedNetworkImage(
-                              errorWidget: (context, url, error) =>
-                                  ShowImage(path: MyConstant.avatar),
-                              placeholder: (context, url) => ShowProgress(),
-                              fit: BoxFit.cover,
-                              imageUrl:
-                                  '${MyConstant.domain}${userModels[index].avatar}'),
-                        ),
-                        ShowTitle(
-                            title: cutWord(userModels[index].name),
-                            textStyle: MyConstant().h3Style()),
-                      ],
+          : Container(decoration: MyConstant().planBackground(),
+            child: GridView.builder(
+                itemCount: userModels.length,
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    childAspectRatio: 2 / 3, maxCrossAxisExtent: 160),
+                itemBuilder: (context, index) => GestureDetector(
+                  onTap: () {
+                    print('You Click from ${userModels[index].name}');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ShowProductBuyer(userModel: userModels[index]),
+                        ));
+                  },
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Container(
+                            width: 80,
+                            height: 80,
+                            child: CachedNetworkImage(
+                                errorWidget: (context, url, error) =>
+                                    ShowImage(path: MyConstant.avatar),
+                                placeholder: (context, url) => ShowProgress(),
+                                fit: BoxFit.cover,
+                                imageUrl:
+                                    '${MyConstant.domain}${userModels[index].avatar}'),
+                          ),
+                          ShowTitle(
+                              title: cutWord(userModels[index].name),
+                              textStyle: MyConstant().h3Style()),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
+          ),
     );
   }
 
