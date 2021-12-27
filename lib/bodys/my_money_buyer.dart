@@ -1,4 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shoppingmall/bodys/approve.dart';
 import 'package:shoppingmall/bodys/wait.dart';
 import 'package:shoppingmall/bodys/wallet.dart';
@@ -35,9 +38,21 @@ class _MyMoneyBuyerState extends State<MyMoneyBuyer> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    readAllWallet();
     setUpBottonBar();
+  }
+
+  Future<void> readAllWallet() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    var idBuyer = preferences.getString('id');
+    print('idBuyer ==> $idBuyer');
+
+    var path =
+        '${MyConstant.domain}/shoppingmall/getWalletWhereIdBuyer.php?isAdd=true&idBuyer=$idBuyer';
+    await Dio().get(path).then((value) {
+      print('value ==>> $value');
+    });
   }
 
   void setUpBottonBar() {
