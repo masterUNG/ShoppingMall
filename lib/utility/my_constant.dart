@@ -4,7 +4,7 @@ class MyConstant {
   // Genernal
   static String appName = 'Shopping Mall';
   static String domain =
-      'https://ad20-2405-9800-bc01-ac24-c8a8-3e10-d447-512d.ngrok.io';
+      'https://2bc3-2405-9800-bc02-c311-981b-235d-a624-d1cb.ngrok.io';
   static String urlPrompay = 'https://promptpay.io/0818595309.png';
   static String publicKey = 'pkey_test_5pp9n4x6lu8v0riuskf';
   static String secreKey = 'skey_test_5pj6xiqsml00cgz0ze2';
@@ -71,6 +71,11 @@ class MyConstant {
   TextStyle h1Style() => TextStyle(
         fontSize: 24,
         color: dark,
+        fontWeight: FontWeight.bold,
+      );
+       TextStyle h1RedStyle() => TextStyle(
+        fontSize: 24,
+        color: Colors.red.shade900,
         fontWeight: FontWeight.bold,
       );
   TextStyle h2Style() => TextStyle(
