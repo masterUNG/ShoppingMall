@@ -2,11 +2,14 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shoppingmall/models/sqlite_model.dart';
 import 'package:shoppingmall/models/user_model.dart';
 import 'package:shoppingmall/utility/my_constant.dart';
+import 'package:shoppingmall/utility/my_dialog.dart';
 import 'package:shoppingmall/utility/sqlite_helper.dart';
 import 'package:shoppingmall/widgets/show_image.dart';
+import 'package:shoppingmall/widgets/show_no_data.dart';
 import 'package:shoppingmall/widgets/show_progress.dart';
 import 'package:shoppingmall/widgets/show_title.dart';
 
@@ -79,29 +82,17 @@ class _ShowCartState extends State<ShowCart> {
       body: load
           ? ShowProgress()
           : sqliteModels.isEmpty
-              ? Container(decoration: MyConstant().gradintLinearBackground(),
-                child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.symmetric(vertical: 16),
-                          width: 200,
-                          child: ShowImage(path: MyConstant.image1),
-                        ),
-                        ShowTitle(
-                            title: 'Empty Cart',
-                            textStyle: MyConstant().h1Style()),
-                      ],
-                    ),
-                  ),
-              )
+              ? ShowNoData(
+                  title: 'Empty Cart',
+                  pathImage: MyConstant.image3,
+                )
               : buildContent(),
     );
   }
 
   Container buildContent() {
-    return Container(decoration: MyConstant().gradintLinearBackground(),
+    return Container(
+      decoration: MyConstant().gradintLinearBackground(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -154,8 +145,30 @@ class _ShowCartState extends State<ShowCart> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         ElevatedButton(
-          onPressed: () {
-            Navigator.pushNamed(context, MyConstant.routeAddWallet);
+          onPressed: () async {
+            MyDialog().showProgressDialog(context);
+
+            SharedPreferences preferences =
+                await SharedPreferences.getInstance();
+            String idBuyer = preferences.getString('id')!;
+
+            var path =
+                '${MyConstant.domain}/shoppingmall/getWalletWhereIdBuyer.php?isAdd=true&idBuyer=$idBuyer';
+            await Dio().get(path).then((value) {
+              Navigator.pop(context);
+              print('#### value == $value');
+              if (value.toString() == 'null') {
+                print('#### action Alert add Wallet');
+                MyDialog(
+                  funcAction: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, MyConstant.routeAddWallet);
+                  },
+                ).actionDialog(context, 'No Wallet', 'Please Add Waller');
+              } else {
+                print('#### check Wallet can Payment');
+              }
+            });
           },
           child: Text('Order'),
         ),

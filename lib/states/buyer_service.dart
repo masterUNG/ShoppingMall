@@ -9,6 +9,7 @@ import 'package:shoppingmall/bodys/my_order_buyer.dart';
 import 'package:shoppingmall/bodys/show_all_shop_buyer.dart';
 import 'package:shoppingmall/models/user_model.dart';
 import 'package:shoppingmall/utility/my_constant.dart';
+import 'package:shoppingmall/utility/my_dialog.dart';
 import 'package:shoppingmall/widgets/show_image.dart';
 import 'package:shoppingmall/widgets/show_progress.dart';
 
@@ -40,17 +41,32 @@ class _BuyerServiceState extends State<BuyerService> {
   Future<void> findUserLogin() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     var idUserLogin = preferences.getString('id');
-    // print('idUserLosing ==>> $idUserLogin');
+
     var urlAPI =
         '${MyConstant.domain}/shoppingmall/getUserWhereId.php?isAdd=true&id=$idUserLogin';
-    await Dio().get(urlAPI).then((value) {
+    await Dio().get(urlAPI).then((value) async {
       for (var item in json.decode(value.data)) {
-        // print('item ==>> $item');
         setState(() {
           userModel = UserModel.fromMap(item);
-          print('name ==> ${userModel!.name}');
+          print('#### id login ==> ${userModel!.id}');
         });
       }
+
+      var path =
+          '${MyConstant.domain}/shoppingmall/getWalletWhereIdBuyer.php?isAdd=true&idBuyer=${userModel!.id}';
+      await Dio().get(path).then((value) {
+        print('#### value getWalletWhereId ==> $value');
+
+        if (value.toString() == 'null') {
+          print('#### action Alert add Wallet');
+          MyDialog(
+            funcAction: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, MyConstant.routeAddWallet);
+            },
+          ).actionDialog(context, 'No Wallet', 'Please Add Waller');
+        }
+      });
     });
   }
 
