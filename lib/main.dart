@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shoppingmall/states/add_product.dart';
@@ -18,16 +20,19 @@ final Map<String, WidgetBuilder> map = {
   '/buyerService': (BuildContext context) => BuyerService(),
   '/salerService': (BuildContext context) => SalerService(),
   '/riderService': (BuildContext context) => RiderService(),
-  '/addProduct':(BuildContext context)=> AddProduct(),
-  '/editProfileSaler':(BuildContext context)=> EditProfileSaler(),
-  MyConstant.routeShowCart:(BuildContext context)=> ShowCart(),
-  MyConstant.routeAddWallet:(BuildContext context)=> AddWallet(),
-  MyConstant.routeConfrimAddWallet:(BuildContext context)=> ConfimeAddWallet(),
+  '/addProduct': (BuildContext context) => AddProduct(),
+  '/editProfileSaler': (BuildContext context) => EditProfileSaler(),
+  MyConstant.routeShowCart: (BuildContext context) => ShowCart(),
+  MyConstant.routeAddWallet: (BuildContext context) => AddWallet(),
+  MyConstant.routeConfrimAddWallet: (BuildContext context) =>
+      ConfimeAddWallet(),
 };
 
 String? initlalRoute;
 
 Future<Null> main() async {
+  HttpOverrides.global = MyHttpOverride();
+
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences preferences = await SharedPreferences.getInstance();
   String? type = preferences.getString('type');
@@ -67,5 +72,14 @@ class MyApp extends StatelessWidget {
       initialRoute: initlalRoute,
       theme: ThemeData(primarySwatch: materialColor),
     );
+  }
+}
+
+class MyHttpOverride extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    // TODO: implement createHttpClient
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (cert, host, port) => true;
   }
 }
