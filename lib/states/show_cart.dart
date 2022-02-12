@@ -180,10 +180,14 @@ class _ShowCartState extends State<ShowCart> {
                 print('#12feb approveWallet ==> $approveWallet');
                 if (approveWallet - total! >= 0) {
                   print('#12feb Can Order');
+                  MyDialog(funcAction: orderFunc).actionDialog(
+                      context,
+                      'Confirm Order ?',
+                      'Order Total : $total thb \n Please Confirm Order');
                 } else {
                   print('#12feb Cannot Order');
                   MyDialog().normalDialog(context, 'Cannot Order ?',
-                      'Approve Money : $approveWallet thb \n Total : $total thb \n จำนวนเงิน ไม่พอจ่าย คุณรอให้ Admin Approve ก่อน');
+                      'Approve Money : $approveWallet thb \n Total : $total thb \n จำนวนเงิน ไม่พอจ่าย คุณรอให้ Admin Approve ก่อน หรือ Add Wallet เข้ามา');
                 }
               }
             });
@@ -353,5 +357,10 @@ class _ShowCartState extends State<ShowCart> {
         textStyle: MyConstant().h1Style(),
       ),
     );
+  }
+
+  Future<void> orderFunc() async {
+    Navigator.pop(context);
+    print('orderFucn work');
   }
 }
