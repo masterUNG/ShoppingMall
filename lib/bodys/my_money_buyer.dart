@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shoppingmall/bodys/approve.dart';
 import 'package:shoppingmall/bodys/wait.dart';
@@ -124,7 +123,11 @@ class _MyMoneyBuyerState extends State<MyMoneyBuyer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: load ? ShowProgress() : haveWallet! ? widgets[indexWidget] :  ShowNoData(title: 'No Wallet', pathImage: 'images/image4.png'),
+      body: load
+          ? ShowProgress()
+          : haveWallet!
+              ? widgets[indexWidget]
+              : ShowNoData(title: 'No Wallet', pathImage: 'images/image4.png'),
       bottomNavigationBar: BottomNavigationBar(
         unselectedItemColor: MyConstant.light,
         selectedItemColor: MyConstant.dark,

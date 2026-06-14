@@ -74,7 +74,7 @@ class MyConstant {
         fontWeight: FontWeight.bold,
       );
 
-TextStyle h1SWhitetyle() => TextStyle(
+  TextStyle h1SWhitetyle() => TextStyle(
         fontSize: 24,
         color: Colors.white,
         fontWeight: FontWeight.bold,
@@ -119,7 +119,7 @@ TextStyle h1SWhitetyle() => TextStyle(
       );
 
   ButtonStyle myButtonStyle() => ElevatedButton.styleFrom(
-        primary: MyConstant.primary,
+        backgroundColor: MyConstant.primary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),

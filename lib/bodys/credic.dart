@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:omise_flutter/omise_flutter.dart';
+import 'package:omise_dart/omise_dart.dart';
 import 'package:shoppingmall/utility/my_constant.dart';
 import 'package:shoppingmall/utility/my_dialog.dart';
 import 'package:shoppingmall/widgets/show_title.dart';
@@ -91,12 +91,21 @@ class _CredicState extends State<Credic> {
     print(
         'name = $name, surname = $surname, publicKey = $publicKey, idCard ==>> $idCard, expiryDataStr = $expriyDateStr, expiryDateMouth ==>> $expiryDateMouth, expiryDatyYear ==>> $expiryDateYear, cvc --> $cvc');
 
-    OmiseFlutter omiseFlutter = OmiseFlutter(publicKey);
-    await omiseFlutter.token
-        .create(
-            '$name $surname', idCard!, expiryDateMouth!, expiryDateYear!, cvc!)
-        .then((value) async {
-      String token = value.id.toString();
+    try {
+      final omiseApi = OmiseApi(
+        publicKey: publicKey,
+        ignoreNullKeys: true,
+      );
+      final value = await omiseApi.tokens.create(
+        CreateTokenRequest(
+          name: '$name $surname',
+          number: idCard!,
+          expirationMonth: expiryDateMouth!,
+          expirationYear: expiryDateYear!,
+          securityCode: cvc!,
+        ),
+      );
+      String token = value.id;
       print('token ==>> $token');
 
       String secreKey = MyConstant.secreKey;
@@ -128,11 +137,11 @@ class _CredicState extends State<Credic> {
       var resultCharge = json.decode(response.body);
       // print('resultCharge = $resultCharge');
       print('status ของการตัดบัตร --->>> ${resultCharge['status']}');
-    }).catchError((value) {
-      String title = value.code;
-      String message = value.message;
+    } on OmiseApiException catch (error) {
+      String title = error.response?.code ?? 'Payment error';
+      String message = error.response?.message ?? error.message;
       MyDialog().normalDialog(context, title, message);
-    });
+    }
   }
 
   Widget formAmount() => Padding(
